@@ -6,6 +6,7 @@ gem "bootsnap"
 gem "pg"
 gem "puma"
 gem "rails", "6.1.1"
+gem "sidekiq"
 
 group :development, :test do
   gem "rubocop-govuk"

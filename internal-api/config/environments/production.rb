@@ -110,4 +110,12 @@ Rails.application.configure do
   # config.active_record.database_selector = { delay: 2.seconds }
   # config.active_record.database_resolver = ActiveRecord::Middleware::DatabaseSelector::Resolver
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
+
+  Sidekiq.configure_server do |config|
+    config.redis = { url: ENV.fetch("REDIS_URL") }
+  end
+
+  Sidekiq.configure_client do |config|
+    config.redis = { url: ENV.fetch("REDIS_URL") }
+  end
 end
