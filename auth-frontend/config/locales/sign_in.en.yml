@@ -1,0 +1,20 @@
+en:
+  sign_in:
+    show:
+      title: Sign in to your account
+      back_link: You can <a href="%{href}">return to the service</a> if you don't want to sign in.
+      fields:
+        email:
+          label: Email address
+          errors:
+            empty: Enter your email address.
+            confirmation_grace_period: You need to confirm your email address before you can sign in to your account. <a href="#unimplemented">Resend confirmation instructions</a>.
+            no_such_user: This email address does not have an account.
+        password:
+          label: Password
+          errors:
+            invalid:  You’ve entered the wrong password - try entering your password again.
+            last_attempt: You will be locked out of your account if you enter the wrong password one more time. You can <a href="#unimplemented">reset your password</a> if you cannot remember it.
+            too_many_attempts: You’ve been locked out of your account because you entered the wrong password too many times. We’ve emailed you a link for unlocking your account.
+        submit:
+          label: Continue

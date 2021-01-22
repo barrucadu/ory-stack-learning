@@ -1,0 +1,21 @@
+<% content_for :title, t("sign_in.show.title") %>
+
+<%= form_with do |f| %>
+<%= f.hidden_field :login_challenge_id, value: @login_challenge_id %>
+
+<%= f.label :email, t("sign_in.show.fields.email.label") %>
+<%= f.email_field :email, value: params[:email] %>
+<% if (@error_items || {})[:email] %>
+  <p><strong><%= sanitize(t("sign_in.show.fields.email.errors.#{@error_items[:email]}")) %></strong></p>
+<% end %>
+
+<%= f.label :password, t("sign_in.show.fields.password.label") %>
+<%= f.password_field :password, value: params[:password] %>
+<% if (@error_items || {})[:password] %>
+  <p><strong><%= sanitize(t("sign_in.show.fields.password.errors.#{@error_items[:password]}")) %></strong></p>
+<% end %>
+
+<%= f.submit t("sign_in.show.fields.submit.label") %>
+<% end %>
+
+<p><%= sanitize(t("sign_in.show.back_link"), href: sign_in_back_path(login_challenge_id: @login_challenge_id)) %></p>

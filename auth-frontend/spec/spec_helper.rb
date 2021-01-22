@@ -5,6 +5,7 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 
 require "rspec/rails"
 require "capybara/rspec"
+require "webmock/rspec"
 
 require "simplecov"
 
@@ -16,6 +17,16 @@ end
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
+  # stub API env vars
+  config.around(:each) do |example|
+    ClimateControl.modify(
+      HYDRA_ADMIN_API_URL: "http://hydra-admin",
+      INTERNAL_API_URL: "http://internal-api",
+    ) do
+      example.run
+    end
+  end
+
   config.expect_with :rspec do |expectations|
     # This option will default to `true` in RSpec 4. It makes the `description`
     # and `failure_message` of custom matchers include text for helper methods

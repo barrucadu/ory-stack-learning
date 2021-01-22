@@ -3,8 +3,10 @@ source "https://rubygems.org"
 ruby File.read(".ruby-version").strip
 
 gem "bootsnap"
+gem "interactor"
 gem "puma"
 gem "rails", "6.1.1"
+gem "rest-client"
 gem "sass-rails"
 
 group :development, :test do
@@ -20,5 +22,7 @@ end
 
 group :test do
   gem "capybara"
+  gem "climate_control"
   gem "rspec-rails"
+  gem "webmock"
 end

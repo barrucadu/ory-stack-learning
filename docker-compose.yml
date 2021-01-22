@@ -45,6 +45,8 @@ services:
       - internal-api
     environment:
       BINDING: 0.0.0.0
+      HYDRA_ADMIN_API_URL: "http://hydra-admin.ory.localhost"
+      INTERNAL_API_URL: "http://internal-api.ory.localhost"
       VIRTUAL_HOST: auth.ory.localhost
     working_dir: /apps/auth-frontend
 
