@@ -1,0 +1,94 @@
+version: "3.7"
+
+x-rails-microservice: &rails-microservice
+  command: bin/rails s --restart
+  expose:
+    - "3000"
+  stdin_open: true
+  tty: true
+  # weirdly, if I use the `- ` syntax here I get "volumes contains an
+  # invalid type, it should be an array"
+  volumes: [
+    "/home/barrucadu/projects/ory-stack-learning:/apps:delegated",
+    "root-home:/root",
+  ]
+
+services:
+  admin-frontend:
+    <<: *rails-microservice
+    image: admin-frontend
+    build:
+      context: ./admin-frontend
+      dockerfile: ../Dockerfile.rails-microservice
+    depends_on:
+      - internal-api
+    environment:
+      BINDING: 0.0.0.0
+      VIRTUAL_HOST: admin.ory.localhost
+    working_dir: /apps/admin-frontend
+
+  auth-frontend:
+    <<: *rails-microservice
+    image: auth-frontend
+    build:
+      context: ./admin-frontend
+      dockerfile: ../Dockerfile.rails-microservice
+    depends_on:
+      - internal-api
+    environment:
+      BINDING: 0.0.0.0
+      VIRTUAL_HOST: auth.ory.localhost
+    working_dir: /apps/auth-frontend
+
+  internal-api:
+    <<: *rails-microservice
+    image: internal-api
+    build:
+      context: ./internal-api
+      dockerfile: ../Dockerfile.rails-microservice
+    depends_on:
+      - postgres
+    environment:
+      BINDING: 0.0.0.0
+      DATABASE_URL: "postgresql://postgres@postgres/internal-api"
+      TEST_DATABASE_URL: "postgresql://postgres@postgres/internal-api_test"
+      VIRTUAL_HOST: internal-api.ory.localhost
+    working_dir: /apps/internal-api
+
+  user-frontend:
+    <<: *rails-microservice
+    image: user-frontend
+    build:
+      context: ./user-frontend
+      dockerfile: ../Dockerfile.rails-microservice
+    depends_on:
+      - internal-api
+    environment:
+      BINDING: 0.0.0.0
+      VIRTUAL_HOST: user.ory.localhost
+    working_dir: /apps/user-frontend
+
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres:/var/lib/postgresql/data
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy:latest
+    ports:
+      - "127.0.0.1:80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    networks:
+      default:
+        aliases:
+          - admin.ory.localhost
+          - auth.ory.localhost
+          - internal-api.ory.localhost
+          - user.ory.localhost
+
+volumes:
+  root-home:
+  postgres:
