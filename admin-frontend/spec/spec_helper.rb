@@ -10,7 +10,9 @@ require "simplecov"
 
 Dir[Rails.root.join("spec/support/**/*.rb")].sort.each { |f| require f }
 
-SimpleCov.start
+SimpleCov.start do
+  enable_coverage :branch
+end
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|

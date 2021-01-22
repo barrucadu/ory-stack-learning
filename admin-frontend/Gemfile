@@ -13,6 +13,7 @@ group :development, :test do
 end
 
 group :development do
+  gem "flog"
   gem "listen"
   gem "spring"
 end

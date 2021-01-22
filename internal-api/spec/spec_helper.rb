@@ -9,10 +9,18 @@ require "simplecov"
 
 Dir[Rails.root.join("spec/support/**/*.rb")].sort.each { |f| require f }
 
-SimpleCov.start
+SimpleCov.start do
+  enable_coverage :branch
+end
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
+   # Check for patterns of poor ActiveRecord usage
+  if Bullet.enable?
+    config.before(:each) { Bullet.start_request }
+    config.after(:each) { Bullet.end_request }
+  end
+
   config.expect_with :rspec do |expectations|
     # This option will default to `true` in RSpec 4. It makes the `description`
     # and `failure_message` of custom matchers include text for helper methods
