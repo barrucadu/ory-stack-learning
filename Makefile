@@ -7,6 +7,8 @@ all: $(APPS) migrate
 migrate:
 	docker-compose run internal-api sh -c "bin/rails db:migrate || bin/rails db:setup"
 	docker-compose run internal-api env RAILS_ENV=test sh -c "bin/rails db:migrate || bin/rails db:setup"
+	docker-compose run internal-api sh -c 'echo "create database hydra;" | psql $$DATABASE_URL'
+	docker-compose run hydra-admin migrate sql $(shell grep DSN docker-compose.yml | head -n1 | sed "s/.*: //") -y
 
 $(APPS):
 	docker-compose build $@

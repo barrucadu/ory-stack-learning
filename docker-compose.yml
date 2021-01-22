@@ -1,5 +1,13 @@
 version: "3.7"
 
+x-hydra-environment: &hydra-environment
+  DSN: "postgres://postgres@postgres/hydra"
+  SECRETS_SYSTEM: "01234567890123456789012345678901"
+  URLS_CONSENT: "http://auth.ory.localhost/consent"
+  URLS_LOGIN: "http://auth.ory.localhost/sign-in"
+  URLS_LOGOUT: "http://auth.ory.localhost/sign-out"
+  URLS_SELF_ISSUER: "http://hydra.ory.localhost"
+
 x-rails-microservice: &rails-microservice
   command: bin/rails s --restart
   expose:
@@ -82,6 +90,33 @@ services:
       REDIS_URL: "redis://redis:6379/0"
     command: bundle exec sidekiq
 
+  # disable access to the admin interface by listening only on
+  # 127.0.0.1
+  hydra: &hydra
+    image: oryd/hydra:v1.9.0
+    depends_on:
+      - postgres
+    command: "serve all --dangerous-force-http"
+    expose:
+      - "4444"
+    environment:
+      <<: *hydra-environment
+      SERVE_ADMIN_HOST: "127.0.0.1"
+      SERVE_PUBLIC_HOST: "0.0.0.0"
+      VIRTUAL_HOST: "hydra.ory.localhost"
+
+  # and for this one flip the IPs around so only the admin interface
+  # is reachable
+  hydra-admin:
+    <<: *hydra
+    expose:
+      - "4445"
+    environment:
+      <<: *hydra-environment
+      SERVE_ADMIN_HOST: "0.0.0.0"
+      SERVE_PUBLIC_HOST: "127.0.0.1"
+      VIRTUAL_HOST: "hydra-admin.ory.localhost"
+
   postgres:
     image: postgres:13
     environment:
@@ -105,6 +140,8 @@ services:
           - auth.ory.localhost
           - internal-api.ory.localhost
           - user.ory.localhost
+          - hydra.ory.localhost
+          - hydra-admin.ory.localhost
 
 volumes:
   root-home:
